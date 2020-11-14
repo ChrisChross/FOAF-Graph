@@ -133,7 +133,7 @@ def app():
   filename = file_selector()
   st.write('You selected `%s`' % filename)
   # sparql_endpoint = st.sidebar.text_input("SPARQL ENDPOINT: ", "http://dbpedia.org/sparql")
-  query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "Inspirationals"]) #rdfs:Resource , "Company", "Location"
+  query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "Inspirationals"], key="second") #rdfs:Resource , "Company", "Location"
   # resource_name = st.sidebar.text_input("Quey Tpye: ", "Barack_Obama" )
   config = Config(height=500, width=700, nodeHighlightBehavior=True, highlightColor="#F7A7A6", directed=True,
                   collapsible=True)
