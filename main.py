@@ -2,76 +2,60 @@ import streamlit as st
 from SPARQLWrapper import SPARQLWrapper, N3, JSON, JSONLD, TURTLE, CSV
 from rdflib import Graph
 # graph analysis library
-from streamlit_agraph import agraph, Node, Edge, Config
+from streamlit_agraph import agraph, Triple, TripleStore, Node, Edge, Config
 from typing import List,Set
 from layout import footer
-
-class Triple:
-  def __init__(self, subj: Node, pred: Edge, obj:Node ) -> None:
-    self.subj = subj
-    self.pred = pred
-    self.obj = obj
-
-class TripleStore:
-  def __init__(self) ->None:
-    self.nodes_set: Set[Node] = set()
-    self.edges_set: Set[Edge] = set()
-    self.triples_set: Set[Triple] = set()
-
-  def add_triple(self, node1, link, node2, picture=""):
-    nodeA = Node(node1, svg=picture)
-    nodeB = Node(node2)
-    edge = Edge(source=nodeA.id, target=nodeB.id, labelProperty=link, renderLabel=True)  # linkValue=link
-    triple = Triple(nodeA, edge, nodeB)
-    self.nodes_set.update([nodeA, nodeB])
-    self.edges_set.add(edge)
-    self.triples_set.add(triple)
-
-  def getTriples(self)->Set[Triple]:
-    return self.triple_set
-
-  def getNodes(self)->Set[Node]:
-    return self.nodes_set
-
-  def getEdges(self)->Set[Edge]:
-    return self.edges_set
-
+from image import circle_image
 # http://dbpedia.org/snorql/
 
-def get_foafs():
+def get_inspired():
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-  query_string = """  SELECT ?p1 ?rel ?p2 WHERE {
-                                                  {
-                                                    ?p1 a foaf:Person .
-                                                    ?p1 ?rel ?p2 .
-                                                    ?p2 a foaf:Person .
-                                                    }
-                                                    UNION
-                                                    {
-                                                    ?p2 a foaf:Person .
-                                                    ?p2 ?rel ?p1 .
-                                                    ?p1 a foaf:Person .
-                                                  }
 
-                                                }
-                                                LIMIT 400
-                 """
+  query_string = """
+  SELECT ?name_pe1_en ?rel_en ?name_pe2_en
+  WHERE {
+    {
+         SELECT ?name_p1 ?rel ?name_p2
+         WHERE {
+             ?p1 a foaf:Person .
+             ?p1 dbo:influencedBy ?p2 .
+             ?p2 a foaf:Person .
+             ?p1 foaf:name ?name_p1 .
+             ?p2 foaf:name ?name_p2 .
+            dbo:influencedBy rdfs:label ?rel .
+            }
+         LIMIT 100
+    }
+    UNION
+    {
+         SELECT ?name_p1 ?rel ?name_p2
+         WHERE {
+            ?p1 a foaf:Person .
+            ?p1 dbo:influenced ?p2 .
+            ?p2 a foaf:Person .
+            ?p1 foaf:name ?name_p1 .
+            ?p2 foaf:name ?name_p2 .
+            dbo:influenced rdfs:label ?rel .
+        }
+     LIMIT 100
+    }
+    FILTER ( LANG(?name_p1) = "en" && LANG(?rel) = "en" && LANG(?name_p2) = "en" )
+    BIND ( STR(?name_p1) AS ?name_pe1_en )
+    BIND ( STR(?rel) AS ?rel_en )
+    BIND ( STR(?name_p2) AS ?name_pe2_en )
+  }
+  """
+
   sparql.setQuery(query_string)
   sparql.setReturnFormat(JSON)
   results = sparql.query().convert()
-  # st.write(results)
   store = TripleStore()
   for result in results["results"]["bindings"]:
-    node1 = result["p1"]["value"].rsplit('/', 1)[1]
-    link = result["rel"]["value"].rsplit('/', 1)[1]
-    node2 = result["p2"]["value"].rsplit('/', 1)[1]
-    store.add_triple(node1,link,node2)
+    node1 = result["name_pe1_en"]["value"]
+    link = result["rel_en"]["value"]
+    node2 = result["name_pe2_en"]["value"]
+    store.add_triple(node1, link, node2)
   return store
-  #persons = []
-  #for result in results["results"]["bindings"]:
-  #  person = result["person"]["value"]
-  #  persons.append(person)
-  #return persons
 
 def get_people():
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
@@ -114,12 +98,12 @@ def do_query(recource):
  #  sparql.setQuery(queryString)
   results = sparql.query().convert()
 
-
   store = TripleStore()
 
   for result in results["results"]["bindings"]:
     subj = result["label"]["value"]
     picture = result["picture"]["value"]
+    picture = circle_image(picture, size=(300, 300))
     for label in result:
       if not label == "picture" and not label ==subj:
         pred = label
@@ -137,11 +121,10 @@ def app():
   st.title("Graph Example")
   st.sidebar.title("Welcome")
   # sparql_endpoint = st.sidebar.text_input("SPARQL ENDPOINT: ", "http://dbpedia.org/sparql")
-  query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "FOAF"]) #rdfs:Resource , "Company", "Location"
+  query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "Inspirationals"]) #rdfs:Resource , "Company", "Location"
   # resource_name = st.sidebar.text_input("Quey Tpye: ", "Barack_Obama" )
   config = Config(height=500, width=700, nodeHighlightBehavior=True, highlightColor="#F7A7A6", directed=True,
                   collapsible=True)
-  # get_foafs()
   if query_type == "Person":
     st.subheader("Person (Date of birth and place)")
     persons = list(get_people())
@@ -150,13 +133,13 @@ def app():
     nodes, edges = do_query(chosen_person)
     agraph(nodes, edges, config)
   if query_type=="FOAF":
-    st.subheader("Friend-of-a-friend")
+    st.subheader("Inspirationals")
     with st.spinner("Loading data"):
-      store = get_foafs()
+      store = get_inspired()
       st.write(len(store.getNodes()))
     st.success("Done")
     agraph(list(store.getNodes()), (store.getEdges() ), config)
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     app()
 
