@@ -2,7 +2,7 @@ import streamlit as st
 from SPARQLWrapper import SPARQLWrapper, N3, JSON, JSONLD, TURTLE, CSV
 from rdflib import Graph
 # graph analysis library
-from streamlit_agraph import agraph, Triple, TripleStore, Node, Edge, Config
+from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
 from typing import List,Set
 from layout import footer
 from image import circle_image
