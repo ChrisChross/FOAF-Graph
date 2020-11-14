@@ -16,8 +16,6 @@ def file_selector(folder_path='.'):
   return os.path.join(folder_path, selected_filename)
 
 
-filename = file_selector()
-st.write('You selected `%s`' % filename)
 def get_inspired():
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 
