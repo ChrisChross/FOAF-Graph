@@ -6,8 +6,18 @@ from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
 from typing import List,Set
 from layout import footer
 from image import circle_image
+import os
+
 # http://dbpedia.org/snorql/
 
+def file_selector(folder_path='.'):
+  filenames = os.listdir(folder_path)
+  selected_filename = st.selectbox('Select a file', filenames, key="unique")
+  return os.path.join(folder_path, selected_filename)
+
+
+filename = file_selector()
+st.write('You selected `%s`' % filename)
 def get_inspired():
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 
@@ -120,6 +130,8 @@ def app():
   footer()
   st.title("Graph Example")
   st.sidebar.title("Welcome")
+  filename = file_selector()
+  st.write('You selected `%s`' % filename)
   # sparql_endpoint = st.sidebar.text_input("SPARQL ENDPOINT: ", "http://dbpedia.org/sparql")
   query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "Inspirationals"]) #rdfs:Resource , "Company", "Location"
   # resource_name = st.sidebar.text_input("Quey Tpye: ", "Barack_Obama" )
