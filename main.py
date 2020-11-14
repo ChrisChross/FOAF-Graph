@@ -10,12 +10,6 @@ import os
 
 # http://dbpedia.org/snorql/
 
-def file_selector(folder_path='.'):
-  filenames = os.listdir(folder_path)
-  selected_filename = st.selectbox('Select a file', filenames, key="unique")
-  return os.path.join(folder_path, selected_filename)
-
-
 def get_inspired():
   sparql = SPARQLWrapper("http://dbpedia.org/sparql")
 
@@ -90,11 +84,13 @@ def do_query(recource):
 
   query_string = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " \
                   "PREFIX dbo: <http://dbpedia.org/ontology/>"  \
-                  "SELECT ?label ?birthPlace ?birthDate ?picture " \
+                  "SELECT ?label ?birthPlace ?birthDate ?deathDate ?picture ?abstract " \
                   f"WHERE {{ <http://dbpedia.org/resource/{recource}> " \
                                                             "rdfs:label ?label;" \
                                                             "dbo:birthPlace ?birthPlace;" \
                                                             "dbo:birthDate ?birthDate;" \
+                                                            "dbo:deathDate ?deathDate;" \
+                                                            "dbo:abstract ?abstract;" \
                                                             "dbo:thumbnail ?picture ." \
         "filter langMatches( lang(?label), 'EN' ) }" \
         "LIMIT 1"
@@ -111,9 +107,10 @@ def do_query(recource):
   for result in results["results"]["bindings"]:
     subj = result["label"]["value"]
     picture = result["picture"]["value"]
-    picture = circle_image(picture, size=(300, 300))
+    abstract = result["abstract"]["value"]
+    # pic, picture = circle_image(picture, size=(300, 300))
     for label in result:
-      if not label == "picture" and not label ==subj:
+      if not label == "picture" and not label == subj and not label == abstract:
         pred = label
         if "http://dbpedia.org/resource/" in result[label]["value"]:
           obj = result[label]["value"].rsplit("/", 1)[1]
@@ -121,15 +118,14 @@ def do_query(recource):
           obj = result[label]["value"]
         # st.write(subj, pred, obj)
         store.add_triple(subj, pred, obj, picture)
-  return list(store.nodes_set), list(store.edges_set)
+  return list(store.nodes_set), list(store.edges_set), abstract
 
 
 def app():
+  # st.set_page_config(layout="wide")
   footer()
   st.title("Graph Example")
   st.sidebar.title("Welcome")
-  filename = file_selector()
-  st.write('You selected `%s`' % filename)
   # sparql_endpoint = st.sidebar.text_input("SPARQL ENDPOINT: ", "http://dbpedia.org/sparql")
   query_type = st.sidebar.selectbox("Quey Tpye: ", ["Person", "Inspirationals"], key="second") #rdfs:Resource , "Company", "Location"
   # resource_name = st.sidebar.text_input("Quey Tpye: ", "Barack_Obama" )
@@ -140,9 +136,13 @@ def app():
     persons = list(get_people())
     st.write(len(persons))
     chosen_person = st.sidebar.selectbox("Choose a Person: ", persons)
-    nodes, edges = do_query(chosen_person)
+    nodes, edges, abstract = do_query(chosen_person)
+    # colWidthArray = [2, 1]
+    #col1, col2= st.beta_columns(colWidthArray)
+    #col1, col2 = st.beta_columns(2)
     agraph(nodes, edges, config)
-  if query_type=="FOAF":
+    st.write(abstract)
+  if query_type=="Inspirationals":
     st.subheader("Inspirationals")
     with st.spinner("Loading data"):
       store = get_inspired()

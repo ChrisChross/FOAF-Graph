@@ -58,4 +58,4 @@ def circle_image(image_link, node_format="circle", size=(250, 250)):
   base_filename = f'./images/cropped/circle_{image_name}.png'
   #dir_name = os.getcwd()
   #full_file_path = os.path.join(dir_name, base_filename)
-  return base_filename #full_file_path
+  return circle_image, base_filename #full_file_path
