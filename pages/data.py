@@ -16,8 +16,8 @@ def app():
       st.success("Done")
   if st.button("Load Persons"):
     persState = PersService.state()
-    with st.spinner("Loading data"):
-      persState.store, persState.algos, persState.node_names = PersService.load_persons()
+    # with st.spinner("Loading data"):
+      # persState.store, persState.algos, persState.node_names = PersService.get_people()
   if hasattr(inspState, "store"):
     triples = inspState.store.getTriples()
     data_table = [[triple.subj.id, triple.pred.labelProperty, triple.obj.id] for triple in triples]

@@ -3,8 +3,7 @@ from typing import List, Set
 from SPARQLWrapper import SPARQLWrapper, N3, JSON, JSONLD, TURTLE, CSV
 
 from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
-from pages import data, persons, inspirationals
-
+from pages import data, persons, inspirationals, playground
 from analysis import GraphAlgos
 from layout import footer
 from image import circle_image
@@ -14,7 +13,8 @@ from image import circle_image
 PAGES = {
     "Data Management": data,
     "Persons": persons,
-    "Inspirationals": inspirationals
+    "Inspirationals": inspirationals,
+    "playground": playground
 }
 
 def app():

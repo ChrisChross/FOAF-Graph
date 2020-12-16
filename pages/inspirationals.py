@@ -23,8 +23,14 @@ def app():
     chosen_person_a = st.sidebar.selectbox("Choose Person A: ", node_names, key="p1")
     chosen_person_b = st.sidebar.selectbox("Choose Person B: ", node_names, key="p2")
     algo_type = st.sidebar.selectbox("Algo ", ["", "Shortest Path", "Community", "PageRank"], key="second")
-    config = Config(height=500, width=700, nodeHighlightBehavior=True,
-                    highlightColor="#F7A7A6", directed=True, collapsible=True)
+    config = Config(height=500,
+                    width=700,
+                    nodeHighlightBehavior=True,
+                    highlightColor="#F7A7A6",
+                    directed=True,
+                    collapsible=True,
+                    link={'labelProperty': 'label', 'renderLabel': True}
+                    )
     if algo_type == "Shortest Path":
       if chosen_person_a != "" and chosen_person_b != "" and chosen_person_a != chosen_person_b:
         analysis_results = algos.shortest_path(chosen_person_a, chosen_person_b)

@@ -21,9 +21,10 @@ def app():
   st.write(len(persons))
 
   chosen_person = st.sidebar.selectbox("Choose a Person: ", persons)
+
   config = Config(height=500, width=700, nodeHighlightBehavior=True,
                   highlightColor="#F7A7A6", directed=True, collapsible=True)
   if chosen_person != "":
-    store, abstract = PersService.get_people(chosen_person)
+    store, abstract = PersService.load_persons(chosen_person)
     agraph(list(store.getNodes()), (store.getEdges()), config)
     st.write(abstract)
