@@ -5,13 +5,18 @@ from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
 
 from services.InspService import load_data
 from services.PersService import load_persons
+<<<<<<< HEAD
 import SessionState
+=======
+
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
 from services import InspService
 
 def app():
   inspState = InspService.state()
   st.subheader("Inspirationals")
   st.markdown("---")
+<<<<<<< HEAD
   session_state = SessionState.get(store=None, algos=None, node_names=[], checkboxed=False)
   if not inspState.loaded:
     st.write("Please load data in the Data Management Page first.")
@@ -21,6 +26,11 @@ def app():
     # session_state.algos = algos
     # session_state.node_names = node_names
     # session_state.checkboxed = True
+=======
+  if not inspState.loaded:
+    st.write("Please load data in the Data Management Page first.")
+    node_names = []
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
   else:
     store = inspState.store
     algos = inspState.algos
@@ -29,8 +39,19 @@ def app():
     chosen_person_a = st.sidebar.selectbox("Choose Person A: ", node_names, key="p1")
     chosen_person_b = st.sidebar.selectbox("Choose Person B: ", node_names, key="p2")
     algo_type = st.sidebar.selectbox("Algo ", ["", "Shortest Path", "Community", "PageRank"], key="second")
+<<<<<<< HEAD
     config = Config(height=500, width=700, nodeHighlightBehavior=True,
                     highlightColor="#F7A7A6", directed=True, collapsible=True)
+=======
+    config = Config(height=500,
+                    width=700,
+                    nodeHighlightBehavior=True,
+                    highlightColor="#F7A7A6",
+                    directed=True,
+                    collapsible=True,
+                    link={'labelProperty': 'label', 'renderLabel': True}
+                    )
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
     if algo_type == "Shortest Path":
       if chosen_person_a != "" and chosen_person_b != "" and chosen_person_a != chosen_person_b:
         analysis_results = algos.shortest_path(chosen_person_a, chosen_person_b)

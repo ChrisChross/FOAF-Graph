@@ -1,6 +1,11 @@
 import streamlit as st
+<<<<<<< HEAD
 from analysis import GraphAlgos
 from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
+=======
+# from analysis import GraphAlgos
+from streamlit_agraph import agraph, TripleStore, Node, Edge, Config, GraphAlgos
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
 from SPARQLWrapper import SPARQLWrapper, JSON
 from typing import List, Set
 

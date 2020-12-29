@@ -3,12 +3,17 @@ from typing import List, Set
 from SPARQLWrapper import SPARQLWrapper, N3, JSON, JSONLD, TURTLE, CSV
 
 from streamlit_agraph import agraph, TripleStore, Node, Edge, Config
+<<<<<<< HEAD
 from pages import data, persons, inspirationals
 
+=======
+from pages import data, persons, inspirationals, playground
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
 from analysis import GraphAlgos
 from layout import footer
 from image import circle_image
 
+<<<<<<< HEAD
 
 # http://dbpedia.org/snorql/
 
@@ -17,6 +22,15 @@ PAGES = {
     "Data Management": data,
     "Persons": persons,
     "Inspirationals": inspirationals
+=======
+# http://dbpedia.org/snorql/
+
+PAGES = {
+    "Data Management": data,
+    "Persons": persons,
+    "Inspirationals": inspirationals,
+    "playground": playground
+>>>>>>> 6f6a9624da414e66674de21213f6c8f387db8519
 }
 
 def app():
