@@ -36,10 +36,10 @@ def layout(*args):
     )
 
     style_hr = styles(
-        display="block",
-        margin=px(8, 8, "auto", "auto"),
-        border_style="inset",
-        border_width=px(2)
+        #display="block",
+        margin=px(0, 0, "auto", "auto"),
+        #border_style="inset",
+        border_width=px(3)
     )
 
     body = p()
@@ -47,7 +47,7 @@ def layout(*args):
         style=style_div
     )(
         hr(
-            style=style_hr
+          style=style_hr
         ),
         body
     )
